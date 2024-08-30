@@ -1,0 +1,27 @@
+import csv
+from bs4 import BeautifulSoup
+import requests
+
+url = "https://www.marvel.com/characters"
+
+response = requests.get(url)
+soup = BeautifulSoup(response.text, "html.parser")
+
+all_a = soup.find_all("a", class_="explore__link")
+data = []
+data1 = []
+
+for item in all_a:
+    item_url = "https://www.marvel.com" + item.get("href")
+    name = item.find("p", class_="card-body__headline")
+    if name:
+        data.append([name.text])
+        data1.append([item_url])
+
+with open("marvel_characters.csv", "w", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Name", "URL"])
+    for i in range(len(data)):
+        writer.writerow([data[i][0], data1[i][0]])
+
+print("Dataset saved to marvel_characters.csv")
